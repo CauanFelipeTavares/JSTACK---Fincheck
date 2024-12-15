@@ -11,7 +11,7 @@ export class UsersService {
 
     const { name, email, password } = createUserDto
 
-    const emailTaken = await this.usersRepo.findUNique({
+    const emailTaken = await this.usersRepo.findUnique({
       where: { email },
       select: { id: true },
     })
