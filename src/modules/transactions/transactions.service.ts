@@ -4,6 +4,7 @@ import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { TransactionsRepository } from 'src/shared/database/repositories/transactions.repositories';
 import { ValidateBankAccountService } from '../bank-accounts/services/validate-bankacc-ownership.service';
 import { ValidateCategoryService } from '../categories/services/validate-category-ownership.service';
+import { TransactionType } from './entities/Transaction';
 
 @Injectable()
 export class TransactionsService {
@@ -31,9 +32,21 @@ export class TransactionsService {
     })
   }
 
-  findAllByUserId(userId: string) {
+  findAllByUserId(
+    userId: string,
+    filters: { month: number, year: number, bankAccountId?: string, type?: TransactionType }
+  ) {
     return this.transactionsRepo.findMany({
-      where: { userId }
+      where: { 
+        userId,
+        bankAccountId: filters.bankAccountId,
+        type: filters.type,
+        date: {
+          gte: new Date(Date.UTC(filters.year, filters.month)), // Essa new date page o primeiro momento desse ano e mes
+          lt: new Date(Date.UTC(filters.year, filters.month + 1)) // filters.month + 1, se for == 12, conta ano que vem
+          // Date.UTC ignora fuso horario, considerando GMT-0
+        }
+      }
     });
   }
 
