@@ -1,6 +1,8 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { CategoriesService } from './services/categories.service';
 import { ActiveUserId } from 'src/shared/decorators/ActiveUserId.decorator';
+import { ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
+import { CustomApiUnauthorizedResponse } from 'src/shared/decorators/Documentation.decorator';
 
 @Controller('categories')
 export class CategoriesController {
@@ -11,6 +13,9 @@ export class CategoriesController {
   //   return this.categoriesService.create(createCategoryDto);
   // }
 
+  @ApiBearerAuth()
+  @CustomApiUnauthorizedResponse()
+  @ApiOkResponse({ description: 'Listed User Categories' })
   @Get()
   findAll(@ActiveUserId() userId: string) {
     return this.categoriesService.findAllByUserId(userId);

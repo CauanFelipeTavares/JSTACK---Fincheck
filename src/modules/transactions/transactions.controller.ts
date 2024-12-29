@@ -4,11 +4,16 @@ import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { ActiveUserId } from 'src/shared/decorators/ActiveUserId.decorator';
 import { TransactionType } from './entities/Transaction';
+import { CustomApiUnauthorizedResponse } from 'src/shared/decorators/Documentation.decorator';
+import { ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
 
+@ApiBearerAuth()
+@CustomApiUnauthorizedResponse()
 @Controller('transactions')
 export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
+  @ApiOkResponse({ description: 'Created Transaction' })
   @Post()
   create(
     @ActiveUserId() userId: string,
@@ -17,6 +22,7 @@ export class TransactionsController {
     return this.transactionsService.create(userId, createTransactionDto);
   }
 
+  @ApiOkResponse({ description: 'Listed Transaction' })
   @Get()
   findAll(
     @ActiveUserId() userId: string,
@@ -28,6 +34,7 @@ export class TransactionsController {
     return this.transactionsService.findAllByUserId(userId, { month, year, bankAccountId, type });
   }
 
+  @ApiOkResponse({ description: 'Updated Transaction' })
   @Put(':transactionId')
   update(
     @ActiveUserId() userId: string,
@@ -37,6 +44,7 @@ export class TransactionsController {
     return this.transactionsService.update(userId, transactionId, updateTransactionDto);
   }
 
+  @ApiOkResponse({ description: 'Deleted Transaction' })
   @Delete(':transactionId')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(
